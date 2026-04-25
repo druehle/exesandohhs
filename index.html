@@ -1,0 +1,1485 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Exes & Ohhs</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0f1014;
+      --panel: #181a20;
+      --panel-soft: #22252d;
+      --cell: #242833;
+      --cell-fixed: #4d535f;
+      --cell-good: #29343b;
+      --cell-bad: #53323a;
+      --text: #f4f7fb;
+      --muted: #99a3b3;
+      --line: #3a414d;
+      --accent: #7ee7b8;
+      --accent-2: #91c8ff;
+      --x-color: #8cc7ff;
+      --o-color: #ffb3c5;
+      --shadow: rgba(0, 0, 0, .34);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      background:
+        linear-gradient(135deg, rgba(126, 231, 184, .08), transparent 32rem),
+        linear-gradient(315deg, rgba(145, 200, 255, .07), transparent 30rem),
+        var(--bg);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .start-screen {
+      width: min(100%, 760px);
+      background: rgba(24, 26, 32, .94);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 8px;
+      padding: clamp(18px, 4vw, 28px);
+      box-shadow: 0 24px 70px var(--shadow);
+      display: grid;
+      gap: 18px;
+    }
+
+    .title-logo {
+      display: block;
+      width: min(100%, 220px);
+      max-height: 220px;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .start-screen .title-logo {
+      width: min(100%, 260px);
+      max-height: 260px;
+      margin: 0 auto;
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .menu-panel {
+      display: grid;
+      gap: 12px;
+      background: rgba(255,255,255,.035);
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 8px;
+      padding: 14px;
+    }
+
+    .menu-panel h2 {
+      margin: 0;
+      font-size: 1rem;
+      letter-spacing: 0;
+    }
+
+    .difficulty {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .difficulty button.active,
+    .sound-row button.active {
+      border-color: rgba(126, 231, 184, .7);
+      background: rgba(126, 231, 184, .13);
+    }
+
+    .menu-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .menu-actions .wide {
+      grid-column: 1 / -1;
+    }
+
+    .sound-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .score-list {
+      display: grid;
+      gap: 8px;
+      color: var(--muted);
+      font-size: .92rem;
+    }
+
+    .score-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      padding-bottom: 7px;
+    }
+
+    .score-line:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    main {
+      width: min(100%, 900px);
+      display: grid;
+      grid-template-columns: 250px minmax(0, 1fr);
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    header {
+      display: grid;
+      gap: 14px;
+      align-content: space-between;
+      align-self: stretch;
+      background: rgba(24, 26, 32, .82);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 8px;
+      padding: 14px;
+      box-shadow: 0 18px 44px var(--shadow);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 6vw, 3.4rem);
+      line-height: .9;
+      letter-spacing: 0;
+    }
+
+    .game-logo {
+      display: block;
+      width: min(100%, 145px);
+      max-height: 145px;
+      height: auto;
+      object-fit: contain;
+      margin: 0 auto;
+    }
+
+    .subtitle {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: .98rem;
+    }
+
+    .controls {
+      display: grid;
+      gap: 10px;
+    }
+
+    button {
+      border: 1px solid rgba(255,255,255,.08);
+      background: var(--panel-soft);
+      color: var(--text);
+      min-height: 36px;
+      padding: 0 12px;
+      border-radius: 8px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 10px 24px var(--shadow);
+    }
+
+    button:hover:not(:disabled) {
+      border-color: rgba(126, 231, 184, .55);
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      color: #737c8d;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .game {
+      background: rgba(24, 26, 32, .92);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 8px;
+      padding: 14px;
+      box-shadow: 0 18px 44px var(--shadow);
+      align-self: stretch;
+      display: grid;
+      align-content: center;
+    }
+
+    .statusbar {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .stat {
+      min-height: 46px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 8px;
+      padding: 7px 10px;
+    }
+
+    .mode-tag {
+      display: block;
+      color: var(--accent);
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .stat b {
+      display: block;
+      color: var(--muted);
+      font-size: .72rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: 2px;
+    }
+
+    .stat span {
+      font-size: 1.08rem;
+      font-weight: 800;
+    }
+
+    .board-wrap {
+      display: flex;
+      justify-content: center;
+      overflow-x: auto;
+      padding: 2px;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(11, minmax(20px, 56px));
+      grid-template-rows: repeat(11, minmax(20px, 56px));
+      gap: 0;
+      width: min(100%, 528px);
+      aspect-ratio: 1;
+    }
+
+    .cell {
+      border: 1px solid var(--line);
+      background: var(--cell);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      font-size: clamp(1.25rem, 6vw, 2.05rem);
+      font-weight: 900;
+      user-select: none;
+      cursor: pointer;
+      transition: background .14s ease, transform .14s ease, border-color .14s ease;
+    }
+
+    .cell:hover {
+      border-color: var(--accent);
+      background: #2e3440;
+    }
+
+    .cell:disabled {
+      color: var(--text);
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .cell.fixed {
+      background: var(--cell-fixed);
+      cursor: default;
+    }
+
+    .cell.fixed:hover {
+      border-color: #ff8fa4;
+      box-shadow: inset 0 0 0 2px rgba(255, 143, 164, .74);
+    }
+
+    .cell.x {
+      color: var(--x-color);
+      text-shadow: 0 0 18px rgba(140, 199, 255, .18);
+    }
+
+    .cell.o {
+      color: var(--o-color);
+      text-shadow: 0 0 18px rgba(255, 179, 197, .16);
+    }
+
+    .cell.clue {
+      box-shadow: inset 0 0 0 2px rgba(126, 231, 184, .34);
+    }
+
+    .cell.bad {
+      background: var(--cell-bad);
+      border-color: #ff8fa4;
+      box-shadow:
+        inset 0 0 0 2px rgba(255, 143, 164, .82),
+        0 0 18px rgba(255, 143, 164, .24);
+    }
+
+    .cell.good {
+      background: var(--cell-good);
+    }
+
+    .connector {
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      font-size: clamp(1.15rem, 5.6vw, 1.85rem);
+      font-weight: 1000;
+      line-height: 1;
+      min-width: 0;
+      min-height: 0;
+    }
+
+    .connector.different {
+      letter-spacing: -.08em;
+    }
+
+    .connector.active {
+      color: var(--accent-2);
+    }
+
+    .connector.bad {
+      color: #ff8fa4;
+    }
+
+    .empty-slot {
+      min-width: 0;
+      min-height: 0;
+    }
+
+    .message {
+      min-height: 24px;
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .message.win {
+      color: #9ce2d8;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      background: rgba(7, 8, 11, .46);
+      z-index: 5;
+    }
+
+    .modal.away-top {
+      place-items: start center;
+    }
+
+    .modal.away-bottom {
+      place-items: end center;
+    }
+
+    .modal-card {
+      width: min(100%, 360px);
+      background: var(--panel);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 8px;
+      padding: 18px;
+      box-shadow: 0 24px 70px var(--shadow);
+      display: grid;
+      gap: 12px;
+      text-align: center;
+    }
+
+    .modal-card h2 {
+      margin: 0;
+      font-size: 2rem;
+      letter-spacing: 0;
+    }
+
+    .modal-card p {
+      margin: 0;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .modal-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    @media (max-width: 620px) {
+      body {
+        padding: 14px;
+        align-items: start;
+      }
+
+      .menu-grid,
+      .menu-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .menu-actions .wide {
+        grid-column: auto;
+      }
+
+      header {
+        align-self: auto;
+      }
+
+      main {
+        grid-template-columns: 1fr;
+        align-items: start;
+      }
+
+      .controls {
+        width: 100%;
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .controls button {
+        min-width: 0;
+      }
+
+      .statusbar {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <section id="startScreen" class="start-screen" aria-label="Exes and Ohhs menu">
+    <div>
+      <img class="title-logo" src="logo.png" alt="Exes &amp; Ohhs">
+      <p class="subtitle">Pick a difficulty, play a random puzzle, or try today's shared daily board.</p>
+    </div>
+    <div class="menu-grid">
+      <div class="menu-panel">
+        <h2>Difficulty</h2>
+        <div class="difficulty" id="difficultyMenu">
+          <button type="button" data-difficulty="easy" class="active">Easy</button>
+          <button type="button" data-difficulty="medium">Medium</button>
+          <button type="button" data-difficulty="hard">Hard</button>
+        </div>
+        <div class="menu-actions">
+          <button id="startRandom" type="button">Random Puzzle</button>
+          <button id="startDaily" type="button">Daily Puzzle</button>
+          <button id="resumeGame" class="wide" type="button">Resume</button>
+        </div>
+        <div class="sound-row">
+          <span>Sound</span>
+          <button id="soundToggle" type="button" class="active">On</button>
+        </div>
+      </div>
+      <div class="menu-panel">
+        <h2>High Scores</h2>
+        <div id="menuScores" class="score-list"></div>
+      </div>
+    </div>
+  </section>
+
+  <main id="gameScreen" class="hidden">
+    <header>
+      <div>
+        <img class="game-logo" src="logo.png" alt="Exes &amp; Ohhs">
+        <p class="subtitle"><span id="modeLabel" class="mode-tag">Easy Random</span></p>
+      </div>
+      <div class="controls">
+        <button id="menuButton" type="button">Menu</button>
+        <button id="hint" type="button">Hint</button>
+        <button id="undo" type="button">Undo</button>
+        <button id="newGame" type="button">New Puzzle</button>
+      </div>
+      <div class="statusbar">
+        <div class="stat"><b>Pieces</b><span id="pieceCount">0 X / 0 O</span></div>
+        <div class="stat"><b>Open</b><span id="openCount">36 squares</span></div>
+        <div class="stat"><b>Time</b><span id="timeCount">0:00</span></div>
+        <div class="stat"><b>Moves</b><span id="moveCount">0</span></div>
+        <div class="stat"><b>Lives</b><span id="lifeCount">3</span></div>
+        <div class="stat"><b>Hints</b><span id="hintCount">3</span></div>
+        <div class="stat"><b>Best</b><span id="bestCount">--</span></div>
+      </div>
+    </header>
+
+    <section class="game" aria-label="Exes and Ohhs game">
+      <div class="board-wrap">
+        <div id="board" class="board" role="grid" aria-label="6 by 6 puzzle board"></div>
+      </div>
+      <p id="message" class="message" aria-live="polite"></p>
+    </section>
+  </main>
+
+  <div id="gameOverModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="gameOverTitle">
+    <div class="modal-card">
+      <h2 id="gameOverTitle">Game Over</h2>
+      <p id="gameOverText">That move broke a rule.</p>
+      <div class="modal-actions">
+        <button id="gameOverMenu" type="button">Menu</button>
+        <button id="gameOverRetry" type="button">Try Again</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SIZE = 6;
+    const PIECES = ["X", "O"];
+    const SAVE_KEY = "exes-ohhs-hints";
+    const SCORES_KEY = "exes-ohhs-scores";
+    const SETTINGS_KEY = "exes-ohhs-settings";
+    const GAME_KEY = "exes-ohhs-active-game";
+    const DIFFICULTIES = {
+      easy: { label: "Easy", givens: 16, hintGrant: 1 },
+      medium: { label: "Medium", givens: 12, hintGrant: 2 },
+      hard: { label: "Hard", givens: 9, hintGrant: 3 }
+    };
+    const startScreenEl = document.querySelector("#startScreen");
+    const gameScreenEl = document.querySelector("#gameScreen");
+    const difficultyMenuEl = document.querySelector("#difficultyMenu");
+    const menuScoresEl = document.querySelector("#menuScores");
+    const startRandomBtn = document.querySelector("#startRandom");
+    const startDailyBtn = document.querySelector("#startDaily");
+    const resumeGameBtn = document.querySelector("#resumeGame");
+    const soundToggleBtn = document.querySelector("#soundToggle");
+    const menuButton = document.querySelector("#menuButton");
+    const gameOverModalEl = document.querySelector("#gameOverModal");
+    const gameOverTextEl = document.querySelector("#gameOverText");
+    const gameOverMenuBtn = document.querySelector("#gameOverMenu");
+    const gameOverRetryBtn = document.querySelector("#gameOverRetry");
+    const boardEl = document.querySelector("#board");
+    const hintBtn = document.querySelector("#hint");
+    const undoBtn = document.querySelector("#undo");
+    const newGameBtn = document.querySelector("#newGame");
+    const pieceCountEl = document.querySelector("#pieceCount");
+    const openCountEl = document.querySelector("#openCount");
+    const timeCountEl = document.querySelector("#timeCount");
+    const moveCountEl = document.querySelector("#moveCount");
+    const lifeCountEl = document.querySelector("#lifeCount");
+    const hintCountEl = document.querySelector("#hintCount");
+    const bestCountEl = document.querySelector("#bestCount");
+    const modeLabelEl = document.querySelector("#modeLabel");
+    const messageEl = document.querySelector("#message");
+
+    let solution = [];
+    let puzzle = [];
+    let board = [];
+    let fixed = [];
+    let connectors = [];
+    let history = [];
+    let clueCells = new Set();
+    let hints = 3;
+    let winProgress = 0;
+    let highScores = {};
+    let selectedDifficulty = "easy";
+    let currentDifficulty = "easy";
+    let currentMode = "random";
+    let currentSeed = "";
+    let soundEnabled = true;
+    let moves = 0;
+    let lives = 3;
+    let startedAt = 0;
+    let elapsedSeconds = 0;
+    let timerInterval = null;
+    let checkTimer = null;
+    let solveTimer = null;
+    let checking = false;
+    let solvePending = false;
+    let gameOver = false;
+    let gameWon = false;
+    let lastWinEarnedHint = false;
+    let currentBadCells = new Set();
+    let audioContext = null;
+
+    function loadProgress() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(SAVE_KEY) || "null");
+        if (saved && Number.isInteger(saved.hints) && Number.isInteger(saved.winProgress)) {
+          hints = Math.max(0, saved.hints);
+          winProgress = Math.max(0, Math.min(1, saved.winProgress));
+        }
+      } catch {
+        hints = 3;
+        winProgress = 0;
+      }
+    }
+
+    function loadSettings() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "null");
+        if (saved && typeof saved.soundEnabled === "boolean") soundEnabled = saved.soundEnabled;
+      } catch {
+        soundEnabled = true;
+      }
+      updateSoundButton();
+    }
+
+    function saveSettings() {
+      try {
+        localStorage.setItem(SETTINGS_KEY, JSON.stringify({ soundEnabled }));
+      } catch {
+        // Settings are optional.
+      }
+    }
+
+    function loadScores() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(SCORES_KEY) || "{}");
+        highScores = saved && typeof saved === "object" ? saved : {};
+      } catch {
+        highScores = {};
+      }
+    }
+
+    function saveScores() {
+      try {
+        localStorage.setItem(SCORES_KEY, JSON.stringify(highScores));
+      } catch {
+        // High scores are optional.
+      }
+    }
+
+    function saveProgress() {
+      try {
+        localStorage.setItem(SAVE_KEY, JSON.stringify({ hints, winProgress }));
+      } catch {
+        // Progress is optional; the game still works if storage is unavailable.
+      }
+    }
+
+    function serializeSet(set) {
+      return [...set];
+    }
+
+    function saveActiveGame() {
+      if (!solution.length || gameWon || gameOver) return clearActiveGame();
+      try {
+        localStorage.setItem(GAME_KEY, JSON.stringify({
+          solution,
+          puzzle,
+          board,
+          fixed,
+          connectors,
+          history,
+          clueCells: serializeSet(clueCells),
+          currentDifficulty,
+          currentMode,
+          currentSeed,
+          moves,
+          lives,
+          currentBadCells: serializeSet(currentBadCells),
+          elapsedSeconds
+        }));
+      } catch {
+        // Resume is optional; active play should continue even if storage is unavailable.
+      }
+      updateResumeButton();
+    }
+
+    function clearActiveGame() {
+      try {
+        localStorage.removeItem(GAME_KEY);
+      } catch {
+        // Resume is optional.
+      }
+      updateResumeButton();
+    }
+
+    function getSavedGame() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(GAME_KEY) || "null");
+        if (!saved || !Array.isArray(saved.board) || !Array.isArray(saved.solution)) return null;
+        return saved;
+      } catch {
+        return null;
+      }
+    }
+
+    function updateResumeButton() {
+      resumeGameBtn.disabled = !getSavedGame();
+    }
+
+    function shuffle(items, rng = Math.random) {
+      const copy = [...items];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(rng() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function hashSeed(text) {
+      let hash = 2166136261;
+      for (let i = 0; i < text.length; i++) {
+        hash ^= text.charCodeAt(i);
+        hash = Math.imul(hash, 16777619);
+      }
+      return hash >>> 0;
+    }
+
+    function seededRandom(seedText) {
+      let state = hashSeed(seedText) || 1;
+      return () => {
+        state += 0x6D2B79F5;
+        let t = state;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    function generateRows() {
+      const rows = [];
+      const build = (prefix, xCount, oCount) => {
+        if (prefix.length === SIZE) {
+          rows.push(prefix);
+          return;
+        }
+        for (const piece of PIECES) {
+          if (piece === "X" && xCount >= 3) continue;
+          if (piece === "O" && oCount >= 3) continue;
+          const next = prefix + piece;
+          if (hasRunOfThree(next.split(""), next.length === SIZE)) continue;
+          build(next, xCount + (piece === "X"), oCount + (piece === "O"));
+        }
+      };
+      build("", 0, 0);
+      return rows;
+    }
+
+    const validRows = generateRows();
+
+    function hasRunOfThree(values, wraps = false) {
+      const checks = wraps ? values.length : values.length - 2;
+      for (let i = 0; i < checks; i++) {
+        const a = values[i];
+        const b = values[(i + 1) % values.length];
+        const c = values[(i + 2) % values.length];
+        if (a && a === b && a === c) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    function canPlaceRow(grid, rowString) {
+      const row = rowString.split("");
+      const rowIndex = grid.length;
+      for (let c = 0; c < SIZE; c++) {
+        const col = grid.map(r => r[c]).concat(row[c]);
+        const xCount = col.filter(v => v === "X").length;
+        const oCount = col.filter(v => v === "O").length;
+        if (xCount > 3 || oCount > 3) return false;
+        if (rowIndex === SIZE - 1 && xCount !== 3) return false;
+        if (hasRunOfThree(col, col.length === SIZE)) return false;
+      }
+      return true;
+    }
+
+    function hasUniqueRowsAndColumns(grid) {
+      const rows = grid.map(row => row.join(""));
+      if (new Set(rows).size !== rows.length) return false;
+      const cols = [];
+      for (let c = 0; c < SIZE; c++) {
+        cols.push(grid.map(row => row[c]).join(""));
+      }
+      return new Set(cols).size === cols.length;
+    }
+
+    function makeSolution(rng = Math.random) {
+      const attempt = (grid = []) => {
+        if (grid.length === SIZE) {
+          return hasUniqueRowsAndColumns(grid) ? grid : null;
+        }
+        for (const rowString of shuffle(validRows, rng)) {
+          if (grid.some(row => row.join("") === rowString)) continue;
+          if (!canPlaceRow(grid, rowString)) continue;
+          const next = attempt([...grid, rowString.split("")]);
+          if (next) return next;
+        }
+        return null;
+      };
+
+      return attempt() || makeSolution(rng);
+    }
+
+    function makeConnectors(fullBoard, rng = Math.random) {
+      const slots = [];
+      for (let r = 0; r < SIZE; r++) {
+        for (let c = 0; c < SIZE - 1; c++) {
+          slots.push({ r, c, dir: "h" });
+        }
+      }
+      for (let r = 0; r < SIZE - 1; r++) {
+        for (let c = 0; c < SIZE; c++) {
+          slots.push({ r, c, dir: "v" });
+        }
+      }
+      return shuffle(slots, rng).slice(0, 2).map(slot => {
+        const a = fullBoard[slot.r][slot.c];
+        const b = slot.dir === "h" ? fullBoard[slot.r][slot.c + 1] : fullBoard[slot.r + 1][slot.c];
+        return { ...slot, type: a === b ? "=" : "//" };
+      });
+    }
+
+    function cellKey(r, c) {
+      return `${r},${c}`;
+    }
+
+    function findStartingClue(fullBoard, rng = Math.random) {
+      const candidates = [];
+      for (let r = 0; r < SIZE; r++) {
+        for (let c = 0; c < SIZE; c++) {
+          const next = (c + 1) % SIZE;
+          if (fullBoard[r][c] === fullBoard[r][next]) {
+            candidates.push({
+              clue: [[r, c], [r, next]],
+              keepOpen: [[r, (c + SIZE - 1) % SIZE], [r, (c + 2) % SIZE]]
+            });
+          }
+        }
+      }
+      for (let c = 0; c < SIZE; c++) {
+        for (let r = 0; r < SIZE; r++) {
+          const next = (r + 1) % SIZE;
+          if (fullBoard[r][c] === fullBoard[next][c]) {
+            candidates.push({
+              clue: [[r, c], [next, c]],
+              keepOpen: [[(r + SIZE - 1) % SIZE, c], [(r + 2) % SIZE, c]]
+            });
+          }
+        }
+      }
+      return shuffle(candidates, rng)[0] || { clue: [], keepOpen: [] };
+    }
+
+    function makePuzzle(fullBoard, difficulty, rng = Math.random) {
+      const next = fullBoard.map(row => row.map(() => ""));
+      const clue = findStartingClue(fullBoard, rng);
+      clueCells = new Set(clue.clue.map(([r, c]) => cellKey(r, c)));
+      const reservedOpen = new Set(clue.keepOpen.map(([r, c]) => cellKey(r, c)));
+      for (const [r, c] of clue.clue) {
+        next[r][c] = fullBoard[r][c];
+      }
+      const cells = shuffle([...Array(SIZE * SIZE).keys()], rng).filter(index => {
+        const r = Math.floor(index / SIZE);
+        const c = index % SIZE;
+        const key = cellKey(r, c);
+        return !clueCells.has(key) && !reservedOpen.has(key);
+      });
+      const givenCount = DIFFICULTIES[difficulty].givens;
+      for (const index of cells.slice(0, givenCount - clue.clue.length)) {
+        const r = Math.floor(index / SIZE);
+        const c = index % SIZE;
+        next[r][c] = fullBoard[r][c];
+      }
+      return next;
+    }
+
+    function dailySeed(difficulty) {
+      const now = new Date();
+      const y = now.getUTCFullYear();
+      const m = String(now.getUTCMonth() + 1).padStart(2, "0");
+      const d = String(now.getUTCDate()).padStart(2, "0");
+      return `daily-${y}-${m}-${d}-${difficulty}`;
+    }
+
+    function updateDailyButton() {
+      startDailyBtn.textContent = "Daily Puzzle";
+      startDailyBtn.disabled = false;
+    }
+
+    function formatTime(totalSeconds) {
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      return `${minutes}:${String(seconds).padStart(2, "0")}`;
+    }
+
+    function scoreKey(mode = currentMode, difficulty = currentDifficulty) {
+      return `${mode}-${difficulty}`;
+    }
+
+    function getBestScore() {
+      return highScores[scoreKey()] || null;
+    }
+
+    function describeBest() {
+      const best = getBestScore();
+      return best ? `${formatTime(best.seconds)} / ${best.moves} moves` : "--";
+    }
+
+    function updateTimer() {
+      if (!startedAt || gameWon || gameOver) return;
+      elapsedSeconds = Math.floor((Date.now() - startedAt) / 1000);
+      timeCountEl.textContent = formatTime(elapsedSeconds);
+      saveActiveGame();
+    }
+
+    function startTimer(initialSeconds = 0) {
+      clearInterval(timerInterval);
+      elapsedSeconds = initialSeconds;
+      startedAt = Date.now() - (initialSeconds * 1000);
+      timeCountEl.textContent = formatTime(elapsedSeconds);
+      timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    function stopTimer() {
+      updateTimer();
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+
+    function updateSoundButton() {
+      soundToggleBtn.textContent = soundEnabled ? "On" : "Off";
+      soundToggleBtn.classList.toggle("active", soundEnabled);
+    }
+
+    function renderMenuScores() {
+      const rows = [];
+      for (const mode of ["random", "daily"]) {
+        for (const difficulty of Object.keys(DIFFICULTIES)) {
+          const best = highScores[`${mode}-${difficulty}`];
+          const label = `${mode === "daily" ? "Daily" : "Random"} ${DIFFICULTIES[difficulty].label}`;
+          rows.push(`<div class="score-line"><span>${label}</span><strong>${best ? `${formatTime(best.seconds)} / ${best.moves}` : "--"}</strong></div>`);
+        }
+      }
+      menuScoresEl.innerHTML = rows.join("");
+    }
+
+    function recordScore() {
+      const key = scoreKey();
+      const nextScore = { seconds: elapsedSeconds, moves };
+      const previous = highScores[key];
+      if (!previous || nextScore.seconds < previous.seconds || (nextScore.seconds === previous.seconds && nextScore.moves < previous.moves)) {
+        highScores[key] = nextScore;
+        saveScores();
+        renderMenuScores();
+      }
+    }
+
+    function playBluup() {
+      if (!soundEnabled) return;
+      const AudioCtor = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtor) return;
+      audioContext ||= new AudioCtor();
+      const now = audioContext.currentTime;
+      const osc = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(180, now);
+      osc.frequency.exponentialRampToValueAtTime(430, now + .09);
+      gain.gain.setValueAtTime(.0001, now);
+      gain.gain.exponentialRampToValueAtTime(.18, now + .015);
+      gain.gain.exponentialRampToValueAtTime(.0001, now + .16);
+      osc.connect(gain);
+      gain.connect(audioContext.destination);
+      osc.start(now);
+      osc.stop(now + .18);
+    }
+
+    function playFanfare() {
+      if (!soundEnabled) return;
+      const AudioCtor = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtor) return;
+      audioContext ||= new AudioCtor();
+      const notes = [523.25, 659.25, 783.99, 1046.5];
+      notes.forEach((frequency, index) => {
+        const start = audioContext.currentTime + index * .13;
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(frequency, start);
+        gain.gain.setValueAtTime(.0001, start);
+        gain.gain.exponentialRampToValueAtTime(.16, start + .025);
+        gain.gain.exponentialRampToValueAtTime(.0001, start + .24);
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+        osc.start(start);
+        osc.stop(start + .26);
+      });
+    }
+
+    function playSadSound() {
+      if (!soundEnabled) return;
+      const AudioCtor = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtor) return;
+      audioContext ||= new AudioCtor();
+      const now = audioContext.currentTime;
+      [
+        { start: 0, from: 392, to: 174, duration: .82, volume: .13 },
+        { start: .26, from: 247, to: 130, duration: .92, volume: .09 }
+      ].forEach(note => {
+        const start = now + note.start;
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(note.from, start);
+        osc.frequency.exponentialRampToValueAtTime(note.to, start + note.duration);
+        gain.gain.setValueAtTime(.0001, start);
+        gain.gain.exponentialRampToValueAtTime(note.volume, start + .06);
+        gain.gain.exponentialRampToValueAtTime(.0001, start + note.duration + .18);
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+        osc.start(start);
+        osc.stop(start + note.duration + .22);
+      });
+    }
+
+    function hideGameOverModal() {
+      gameOverModalEl.classList.add("hidden");
+      gameOverModalEl.classList.remove("away-top", "away-bottom");
+    }
+
+    function showGameOverModal() {
+      const badCells = [...rowOrColumnErrors()].map(key => key.split(",").map(Number));
+      gameOverModalEl.classList.remove("away-top", "away-bottom");
+      if (badCells.length) {
+        const averageRow = badCells.reduce((sum, [r]) => sum + r, 0) / badCells.length;
+        gameOverModalEl.classList.add(averageRow < (SIZE - 1) / 2 ? "away-bottom" : "away-top");
+      }
+      gameOverTextEl.textContent = "That move broke a rule.";
+      gameOverRetryBtn.textContent = currentMode === "daily" ? "Try Again" : "New Puzzle";
+      gameOverRetryBtn.disabled = false;
+      gameOverModalEl.classList.remove("hidden");
+    }
+
+    function setSelectedDifficulty(difficulty) {
+      selectedDifficulty = difficulty;
+      difficultyMenuEl.querySelectorAll("button").forEach(button => {
+        button.classList.toggle("active", button.dataset.difficulty === difficulty);
+      });
+      updateDailyButton();
+    }
+
+    function showMenu() {
+      hideGameOverModal();
+      if (!gameWon && !gameOver && solution.length) {
+        updateTimer();
+        saveActiveGame();
+      }
+      clearTimeout(checkTimer);
+      clearTimeout(solveTimer);
+      clearInterval(timerInterval);
+      checkTimer = null;
+      solveTimer = null;
+      timerInterval = null;
+      checking = false;
+      solvePending = false;
+      gameScreenEl.classList.add("hidden");
+      startScreenEl.classList.remove("hidden");
+      renderMenuScores();
+      updateResumeButton();
+      updateDailyButton();
+    }
+
+    function newPuzzle(mode = currentMode, difficulty = currentDifficulty) {
+      hideGameOverModal();
+      clearActiveGame();
+      currentMode = mode;
+      currentDifficulty = difficulty;
+      currentSeed = mode === "daily" ? dailySeed(difficulty) : `random-${Date.now()}-${Math.random()}`;
+      const rng = mode === "daily" ? seededRandom(currentSeed) : Math.random;
+      solution = makeSolution(rng);
+      puzzle = makePuzzle(solution, difficulty, rng);
+      board = puzzle.map(row => [...row]);
+      fixed = puzzle.map(row => row.map(Boolean));
+      connectors = makeConnectors(solution, rng);
+      history = [];
+      moves = 0;
+      hints += DIFFICULTIES[difficulty].hintGrant;
+      saveProgress();
+      lives = 3;
+      currentBadCells = new Set();
+      clearTimeout(checkTimer);
+      clearTimeout(solveTimer);
+      checkTimer = null;
+      solveTimer = null;
+      checking = false;
+      solvePending = false;
+      gameOver = false;
+      gameWon = false;
+      lastWinEarnedHint = false;
+      newGameBtn.textContent = "New Puzzle";
+      modeLabelEl.textContent = `${DIFFICULTIES[difficulty].label} ${mode === "daily" ? "Daily" : "Random"}`;
+      startScreenEl.classList.add("hidden");
+      gameScreenEl.classList.remove("hidden");
+      startTimer();
+      render();
+      updateStatus();
+      saveActiveGame();
+    }
+
+    function resumeSavedGame() {
+      const saved = getSavedGame();
+      if (!saved) return;
+      hideGameOverModal();
+      solution = saved.solution;
+      puzzle = saved.puzzle;
+      board = saved.board;
+      fixed = saved.fixed;
+      connectors = saved.connectors.map(conn => ({ ...conn, type: conn.type === "*" ? "//" : conn.type }));
+      history = Array.isArray(saved.history) ? saved.history : [];
+      clueCells = new Set(saved.clueCells || []);
+      currentDifficulty = saved.currentDifficulty || "easy";
+      currentMode = saved.currentMode || "random";
+      currentSeed = saved.currentSeed || "";
+      moves = Number.isInteger(saved.moves) ? saved.moves : 0;
+      lives = Number.isInteger(saved.lives) ? saved.lives : 3;
+      currentBadCells = new Set(saved.currentBadCells || []);
+      elapsedSeconds = Number.isInteger(saved.elapsedSeconds) ? saved.elapsedSeconds : 0;
+      clearTimeout(checkTimer);
+      clearTimeout(solveTimer);
+      checkTimer = null;
+      solveTimer = null;
+      checking = false;
+      solvePending = false;
+      gameOver = false;
+      gameWon = false;
+      lastWinEarnedHint = false;
+      newGameBtn.textContent = "New Puzzle";
+      modeLabelEl.textContent = `${DIFFICULTIES[currentDifficulty].label} ${currentMode === "daily" ? "Daily" : "Random"}`;
+      startScreenEl.classList.add("hidden");
+      gameScreenEl.classList.remove("hidden");
+      startTimer(elapsedSeconds);
+      render();
+      updateStatus("Resumed game.");
+    }
+
+    function cycleCell(r, c) {
+      if (fixed[r][c] || gameOver || solvePending || gameWon) return;
+      history.push(board.map(row => [...row]));
+      currentBadCells = new Set();
+      if (board[r][c] === "") board[r][c] = "X";
+      else if (board[r][c] === "X") board[r][c] = "O";
+      else board[r][c] = "";
+      moves++;
+      playBluup();
+      scheduleCheck();
+      render();
+      updateStatus();
+      saveActiveGame();
+    }
+
+    function useHint() {
+      if (hints <= 0 || gameOver || solvePending || gameWon) return;
+      const openCells = [];
+      for (let r = 0; r < SIZE; r++) {
+        for (let c = 0; c < SIZE; c++) {
+          if (!board[r][c]) openCells.push([r, c]);
+        }
+      }
+      const target = shuffle(openCells)[0];
+      if (!target) return;
+      const [r, c] = target;
+      hints--;
+      saveProgress();
+      currentBadCells = new Set();
+      board[r][c] = solution[r][c];
+      fixed[r][c] = true;
+      clueCells.add(cellKey(r, c));
+      moves++;
+      scheduleCheck();
+      render();
+      updateStatus("Hint used.");
+      saveActiveGame();
+    }
+
+    function undo() {
+      if (gameOver || solvePending || gameWon) return;
+      const previous = history.pop();
+      if (!previous) return;
+      board = previous;
+      currentBadCells = new Set();
+      scheduleCheck();
+      render();
+      updateStatus();
+      saveActiveGame();
+    }
+
+    function scheduleCheck() {
+      clearTimeout(checkTimer);
+      clearTimeout(solveTimer);
+      checking = true;
+      solvePending = false;
+      solveTimer = null;
+      checkTimer = setTimeout(() => {
+        checking = false;
+        checkTimer = null;
+        const errors = rowOrColumnErrors();
+        if (errors.size) {
+          currentBadCells = errors;
+          lives = Math.max(0, lives - 1);
+          playSadSound();
+          if (lives === 0) {
+            gameOver = true;
+            stopTimer();
+            clearActiveGame();
+            showGameOverModal();
+          } else {
+            saveActiveGame();
+          }
+        } else if (isCompleteAndValid()) {
+          currentBadCells = new Set();
+          awardWin();
+        } else {
+          currentBadCells = new Set();
+          saveActiveGame();
+        }
+        render();
+        updateStatus(errors.size && !gameOver ? `Rule broken. ${lives} ${lives === 1 ? "life" : "lives"} left.` : "");
+      }, 3000);
+    }
+
+    function getConnectorAt(gridR, gridC) {
+      if (gridR % 2 === 0 && gridC % 2 === 1) {
+        return connectors.find(conn => conn.dir === "h" && conn.r === gridR / 2 && conn.c === (gridC - 1) / 2);
+      }
+      if (gridR % 2 === 1 && gridC % 2 === 0) {
+        return connectors.find(conn => conn.dir === "v" && conn.r === (gridR - 1) / 2 && conn.c === gridC / 2);
+      }
+      return null;
+    }
+
+    function connectorState(connector) {
+      const a = board[connector.r][connector.c];
+      const b = connector.dir === "h" ? board[connector.r][connector.c + 1] : board[connector.r + 1][connector.c];
+      if (!a || !b) return "";
+      const valid = connector.type === "=" ? a === b : a !== b;
+      return valid ? "active" : "bad";
+    }
+
+    function rowOrColumnErrors() {
+      const badCells = new Set();
+      const addRow = r => Array.from({ length: SIZE }, (_, c) => badCells.add(`${r},${c}`));
+      const addCol = c => Array.from({ length: SIZE }, (_, r) => badCells.add(`${r},${c}`));
+      const addRuns = (values, mark) => {
+        for (let i = 0; i < values.length; i++) {
+          const a = values[i];
+          const b = values[(i + 1) % values.length];
+          const c = values[(i + 2) % values.length];
+          if (a && a === b && a === c) {
+            mark(i);
+            mark((i + 1) % values.length);
+            mark((i + 2) % values.length);
+          }
+        }
+      };
+
+      for (let r = 0; r < SIZE; r++) {
+        const row = board[r];
+        const xs = row.filter(v => v === "X").length;
+        const os = row.filter(v => v === "O").length;
+        if (xs > 3 || os > 3) addRow(r);
+        addRuns(row, c => badCells.add(`${r},${c}`));
+      }
+
+      for (let c = 0; c < SIZE; c++) {
+        const col = board.map(row => row[c]);
+        const xs = col.filter(v => v === "X").length;
+        const os = col.filter(v => v === "O").length;
+        if (xs > 3 || os > 3) addCol(c);
+        addRuns(col, r => badCells.add(`${r},${c}`));
+      }
+
+      const fullRows = new Map();
+      for (let r = 0; r < SIZE; r++) {
+        const row = board[r];
+        if (row.every(Boolean)) {
+          const key = row.join("");
+          if (fullRows.has(key)) {
+            addRow(r);
+            addRow(fullRows.get(key));
+          } else {
+            fullRows.set(key, r);
+          }
+        }
+      }
+
+      const fullCols = new Map();
+      for (let c = 0; c < SIZE; c++) {
+        const col = board.map(row => row[c]);
+        if (col.every(Boolean)) {
+          const key = col.join("");
+          if (fullCols.has(key)) {
+            addCol(c);
+            addCol(fullCols.get(key));
+          } else {
+            fullCols.set(key, c);
+          }
+        }
+      }
+
+      for (const conn of connectors) {
+        if (connectorState(conn) === "bad") {
+          badCells.add(`${conn.r},${conn.c}`);
+          if (conn.dir === "h") badCells.add(`${conn.r},${conn.c + 1}`);
+          else badCells.add(`${conn.r + 1},${conn.c}`);
+        }
+      }
+      return badCells;
+    }
+
+    function isCompleteAndValid() {
+      if (!board.flat().every(Boolean)) return false;
+      if (rowOrColumnErrors().size) return false;
+      const xs = board.flat().filter(v => v === "X").length;
+      const os = board.flat().filter(v => v === "O").length;
+      return xs === 18 && os === 18;
+    }
+
+    function render() {
+      const badCells = currentBadCells.size ? currentBadCells : new Set();
+      boardEl.innerHTML = "";
+      for (let gr = 0; gr < SIZE * 2 - 1; gr++) {
+        for (let gc = 0; gc < SIZE * 2 - 1; gc++) {
+          if (gr % 2 === 0 && gc % 2 === 0) {
+            const r = gr / 2;
+            const c = gc / 2;
+            const cell = document.createElement("button");
+            cell.type = "button";
+            cell.className = "cell";
+            if (fixed[r][c]) cell.classList.add("fixed");
+            if (clueCells.has(cellKey(r, c))) cell.classList.add("clue");
+            if (board[r][c]) cell.classList.add(board[r][c].toLowerCase());
+            cell.disabled = gameOver || solvePending || gameWon;
+            if (badCells.has(cellKey(r, c))) cell.classList.add("bad");
+            else if (board[r][c]) cell.classList.add("good");
+            cell.textContent = board[r][c];
+            cell.setAttribute("role", "gridcell");
+            cell.setAttribute("aria-label", `row ${r + 1}, column ${c + 1}${board[r][c] ? ", " + board[r][c] : ", empty"}`);
+            cell.addEventListener("click", () => cycleCell(r, c));
+            boardEl.append(cell);
+          } else {
+            const conn = getConnectorAt(gr, gc);
+            const slot = document.createElement("div");
+            if (conn) {
+              const state = currentBadCells.size ? connectorState(conn) : "";
+              slot.className = `connector ${conn.type === "//" ? "different" : ""} ${state}`;
+              slot.textContent = conn.type;
+              slot.setAttribute("aria-label", conn.type === "=" ? "same connector" : "different connector");
+            } else {
+              slot.className = "empty-slot";
+            }
+            boardEl.append(slot);
+          }
+        }
+      }
+      hintBtn.disabled = gameOver || solvePending || gameWon || hints <= 0 || !board.flat().some(value => !value);
+      undoBtn.disabled = gameOver || solvePending || gameWon || history.length === 0;
+    }
+
+    function scheduleSolveIfNeeded() {
+      if (gameWon || solvePending || checking || !isCompleteAndValid()) return;
+      solvePending = true;
+      clearTimeout(checkTimer);
+      checkTimer = null;
+      checking = false;
+      solveTimer = setTimeout(() => {
+        solveTimer = null;
+        awardWin();
+        render();
+        updateStatus();
+      }, 2500);
+    }
+
+    function awardWin() {
+      if (gameWon) return false;
+      gameWon = true;
+      solvePending = false;
+      clearTimeout(checkTimer);
+      clearTimeout(solveTimer);
+      checkTimer = null;
+      solveTimer = null;
+      checking = false;
+      stopTimer();
+      winProgress++;
+      lastWinEarnedHint = false;
+      if (winProgress >= 2) {
+        hints++;
+        winProgress = 0;
+        lastWinEarnedHint = true;
+      }
+      saveProgress();
+      recordScore();
+      clearActiveGame();
+      newGameBtn.textContent = "Next Puzzle";
+      playFanfare();
+      return true;
+    }
+
+    function updateStatus(note = "") {
+      const flat = board.flat();
+      const xs = flat.filter(v => v === "X").length;
+      const os = flat.filter(v => v === "O").length;
+      const open = flat.filter(v => !v).length;
+      scheduleSolveIfNeeded();
+      pieceCountEl.textContent = `${xs} X / ${os} O`;
+      openCountEl.textContent = `${open} ${open === 1 ? "square" : "squares"}`;
+      timeCountEl.textContent = formatTime(elapsedSeconds);
+      moveCountEl.textContent = String(moves);
+      lifeCountEl.textContent = String(lives);
+      hintCountEl.textContent = String(hints);
+      bestCountEl.textContent = describeBest();
+      hintBtn.disabled = gameOver || solvePending || gameWon || hints <= 0 || open === 0;
+      messageEl.classList.toggle("win", gameWon);
+
+      if (gameOver) {
+        messageEl.textContent = "Game over. That move broke a rule.";
+      } else if (solvePending) {
+        messageEl.textContent = "Checking the finished board...";
+      } else if (gameWon) {
+        messageEl.textContent = lastWinEarnedHint ? "Congratulations. You solved it and earned a hint." : "Congratulations. You solved it.";
+      } else if (note) {
+        messageEl.textContent = note;
+      } else {
+        messageEl.textContent = "";
+      }
+    }
+
+    loadProgress();
+    loadSettings();
+    loadScores();
+    renderMenuScores();
+    updateResumeButton();
+    setSelectedDifficulty(selectedDifficulty);
+    difficultyMenuEl.addEventListener("click", event => {
+      const button = event.target.closest("button[data-difficulty]");
+      if (button) setSelectedDifficulty(button.dataset.difficulty);
+    });
+    startRandomBtn.addEventListener("click", () => newPuzzle("random", selectedDifficulty));
+    startDailyBtn.addEventListener("click", () => newPuzzle("daily", selectedDifficulty));
+    resumeGameBtn.addEventListener("click", resumeSavedGame);
+    soundToggleBtn.addEventListener("click", () => {
+      soundEnabled = !soundEnabled;
+      updateSoundButton();
+      saveSettings();
+      playBluup();
+    });
+    menuButton.addEventListener("click", showMenu);
+    gameOverMenuBtn.addEventListener("click", showMenu);
+    gameOverRetryBtn.addEventListener("click", () => newPuzzle(currentMode, currentDifficulty));
+    hintBtn.addEventListener("click", useHint);
+    undoBtn.addEventListener("click", undo);
+    newGameBtn.addEventListener("click", () => {
+      const nextMode = gameWon ? "random" : currentMode;
+      newPuzzle(nextMode, currentDifficulty);
+    });
+  </script>
+</body>
+</html>
