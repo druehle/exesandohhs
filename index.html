@@ -94,6 +94,16 @@
       letter-spacing: 0;
     }
 
+    .rules-list {
+      margin: 0;
+      padding-left: 1.15rem;
+      color: var(--muted);
+      display: grid;
+      gap: 7px;
+      font-size: .92rem;
+      line-height: 1.35;
+    }
+
     .difficulty {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -116,13 +126,30 @@
       grid-column: 1 / -1;
     }
 
+    .menu-tools {
+      display: grid;
+      grid-template-columns: minmax(0, .75fr) minmax(0, 1fr);
+      gap: 8px;
+      align-items: stretch;
+    }
+
     .sound-row {
       display: flex;
       justify-content: space-between;
-      gap: 10px;
+      gap: 8px;
       align-items: center;
       color: var(--muted);
       font-weight: 700;
+      min-width: 0;
+      border: 1px solid rgba(255,255,255,.09);
+      border-radius: 8px;
+      padding: 0 8px;
+      min-height: 38px;
+    }
+
+    .sound-row button {
+      min-height: 30px;
+      padding: 0 10px;
     }
 
     .score-list {
@@ -189,6 +216,7 @@
 
     .controls {
       display: grid;
+      grid-template-columns: repeat(2, 1fr);
       gap: 10px;
     }
 
@@ -238,7 +266,7 @@
       background: rgba(255,255,255,.04);
       border: 1px solid rgba(255,255,255,.07);
       border-radius: 8px;
-      padding: 7px 10px;
+      padding: 7px 8px;
     }
 
     .mode-tag {
@@ -260,6 +288,21 @@
     .stat span {
       font-size: 1.08rem;
       font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .stat.wide {
+      grid-column: 1 / -1;
+    }
+
+    .piece-lines {
+      display: grid;
+      gap: 1px;
+      line-height: 1.05;
+    }
+
+    .piece-lines span {
+      font-size: .96rem;
     }
 
     .board-wrap {
@@ -274,7 +317,7 @@
       grid-template-columns: repeat(11, minmax(20px, 56px));
       grid-template-rows: repeat(11, minmax(20px, 56px));
       gap: 0;
-      width: min(100%, 528px);
+      width: min(100%, 458px);
       aspect-ratio: 1;
     }
 
@@ -282,10 +325,13 @@
       border: 1px solid var(--line);
       background: var(--cell);
       color: var(--text);
-      display: grid;
-      place-items: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: clamp(1.25rem, 6vw, 2.05rem);
       font-weight: 900;
+      line-height: 1;
+      padding: 0;
       user-select: none;
       cursor: pointer;
       transition: background .14s ease, transform .14s ease, border-color .14s ease;
@@ -304,12 +350,13 @@
 
     .cell.fixed {
       background: var(--cell-fixed);
-      cursor: default;
+      cursor: not-allowed;
     }
 
     .cell.fixed:hover {
       border-color: #ff8fa4;
       box-shadow: inset 0 0 0 2px rgba(255, 143, 164, .74);
+      cursor: not-allowed;
     }
 
     .cell.x {
@@ -349,16 +396,27 @@
       min-height: 0;
     }
 
-    .connector.different {
-      letter-spacing: -.08em;
+    .connector.same {
+      color: #8fdcab;
     }
 
-    .connector.active {
-      color: var(--accent-2);
+    .connector.different {
+      color: #e68998;
+    }
+
+    .connector.same.active {
+      color: #a5efbf;
+      text-shadow: 0 0 12px rgba(126, 231, 184, .18);
+    }
+
+    .connector.different.active {
+      color: #f09aaa;
+      text-shadow: 0 0 12px rgba(255, 143, 164, .16);
     }
 
     .connector.bad {
       color: #ff8fa4;
+      text-shadow: 0 0 14px rgba(255, 143, 164, .28);
     }
 
     .empty-slot {
@@ -376,6 +434,17 @@
 
     .message.win {
       color: #9ce2d8;
+    }
+
+    .violation-undo {
+      display: flex;
+      justify-content: center;
+      margin-top: 8px;
+    }
+
+    .violation-undo button {
+      border-color: rgba(255, 143, 164, .48);
+      background: rgba(255, 143, 164, .12);
     }
 
     .modal {
@@ -408,6 +477,16 @@
       text-align: center;
     }
 
+    .rules-card {
+      width: min(100%, 520px);
+      text-align: left;
+    }
+
+    .rules-card h2,
+    .rules-card .modal-actions {
+      text-align: center;
+    }
+
     .modal-card h2 {
       margin: 0;
       font-size: 2rem;
@@ -433,6 +512,7 @@
       }
 
       .menu-grid,
+      .menu-tools,
       .menu-actions {
         grid-template-columns: 1fr;
       }
@@ -452,7 +532,6 @@
 
       .controls {
         width: 100%;
-        grid-template-columns: repeat(3, 1fr);
       }
 
       .controls button {
@@ -484,9 +563,12 @@
           <button id="startDaily" type="button">Daily Puzzle</button>
           <button id="resumeGame" class="wide" type="button">Resume</button>
         </div>
-        <div class="sound-row">
-          <span>Sound</span>
-          <button id="soundToggle" type="button" class="active">On</button>
+        <div class="menu-tools">
+          <div class="sound-row">
+            <span>Sound</span>
+            <button id="soundToggle" type="button" class="active">On</button>
+          </div>
+          <button id="menuHelpButton" type="button">How To Play</button>
         </div>
       </div>
       <div class="menu-panel">
@@ -504,18 +586,20 @@
       </div>
       <div class="controls">
         <button id="menuButton" type="button">Menu</button>
-        <button id="hint" type="button">Hint</button>
-        <button id="undo" type="button">Undo</button>
         <button id="newGame" type="button">New Puzzle</button>
+        <button id="undo" type="button">Undo</button>
+        <button id="resetLevel" type="button">Reset</button>
+        <button id="hint" type="button">Hint</button>
+        <button id="helpButton" type="button">Help</button>
       </div>
       <div class="statusbar">
-        <div class="stat"><b>Pieces</b><span id="pieceCount">0 X / 0 O</span></div>
+        <div class="stat"><b>Pieces</b><span id="pieceCount" class="piece-lines"><span>X: 0</span><span>O: 0</span></span></div>
         <div class="stat"><b>Open</b><span id="openCount">36 squares</span></div>
         <div class="stat"><b>Time</b><span id="timeCount">0:00</span></div>
         <div class="stat"><b>Moves</b><span id="moveCount">0</span></div>
         <div class="stat"><b>Lives</b><span id="lifeCount">3</span></div>
         <div class="stat"><b>Hints</b><span id="hintCount">3</span></div>
-        <div class="stat"><b>Best</b><span id="bestCount">--</span></div>
+        <div class="stat wide"><b>Best</b><span id="bestCount">--</span></div>
       </div>
     </header>
 
@@ -524,6 +608,9 @@
         <div id="board" class="board" role="grid" aria-label="6 by 6 puzzle board"></div>
       </div>
       <p id="message" class="message" aria-live="polite"></p>
+      <div id="violationUndo" class="violation-undo hidden">
+        <button id="violationUndoButton" type="button">Continue</button>
+      </div>
     </section>
   </main>
 
@@ -538,6 +625,36 @@
     </div>
   </div>
 
+  <div id="helpModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+    <div class="modal-card rules-card">
+      <h2 id="helpTitle">Rules</h2>
+      <ul class="rules-list">
+        <li>Fill the 6x6 board with X and O.</li>
+        <li>Each row and each column must contain exactly three Xs and three Os.</li>
+        <li>No three matching pieces may appear in a row horizontally or vertically, including across board edges.</li>
+        <li>No two completed rows or completed columns may be identical.</li>
+        <li>A green = connector means the two neighboring cells must match.</li>
+        <li>A red ≠ connector means the two neighboring cells must be different.</li>
+        <li>Starting cells are fixed and cannot be changed.</li>
+        <li>Breaking a rule costs one life and highlights the violation; losing all lives ends the game.</li>
+      </ul>
+      <div class="modal-actions">
+        <button id="helpClose" type="button">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="resetModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="resetTitle">
+    <div class="modal-card">
+      <h2 id="resetTitle">Reset Level?</h2>
+      <p>This will return the board to how it started.</p>
+      <div class="modal-actions">
+        <button id="resetCancel" type="button">Cancel</button>
+        <button id="resetConfirm" type="button">Reset</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const SIZE = 6;
     const PIECES = ["X", "O"];
@@ -545,6 +662,8 @@
     const SCORES_KEY = "exes-ohhs-scores";
     const SETTINGS_KEY = "exes-ohhs-settings";
     const GAME_KEY = "exes-ohhs-active-game";
+    const DAILY_GAMES_KEY = "exes-ohhs-daily-games";
+    const DIFFERENT_CONNECTOR = "≠";
     const DIFFICULTIES = {
       easy: { label: "Easy", givens: 16, hintGrant: 1 },
       medium: { label: "Medium", givens: 12, hintGrant: 2 },
@@ -558,7 +677,11 @@
     const startDailyBtn = document.querySelector("#startDaily");
     const resumeGameBtn = document.querySelector("#resumeGame");
     const soundToggleBtn = document.querySelector("#soundToggle");
+    const menuHelpButton = document.querySelector("#menuHelpButton");
     const menuButton = document.querySelector("#menuButton");
+    const helpButton = document.querySelector("#helpButton");
+    const helpModalEl = document.querySelector("#helpModal");
+    const helpCloseBtn = document.querySelector("#helpClose");
     const gameOverModalEl = document.querySelector("#gameOverModal");
     const gameOverTextEl = document.querySelector("#gameOverText");
     const gameOverMenuBtn = document.querySelector("#gameOverMenu");
@@ -566,6 +689,7 @@
     const boardEl = document.querySelector("#board");
     const hintBtn = document.querySelector("#hint");
     const undoBtn = document.querySelector("#undo");
+    const resetLevelBtn = document.querySelector("#resetLevel");
     const newGameBtn = document.querySelector("#newGame");
     const pieceCountEl = document.querySelector("#pieceCount");
     const openCountEl = document.querySelector("#openCount");
@@ -576,6 +700,11 @@
     const bestCountEl = document.querySelector("#bestCount");
     const modeLabelEl = document.querySelector("#modeLabel");
     const messageEl = document.querySelector("#message");
+    const violationUndoEl = document.querySelector("#violationUndo");
+    const violationUndoButton = document.querySelector("#violationUndoButton");
+    const resetModalEl = document.querySelector("#resetModal");
+    const resetCancelBtn = document.querySelector("#resetCancel");
+    const resetConfirmBtn = document.querySelector("#resetConfirm");
 
     let solution = [];
     let puzzle = [];
@@ -599,12 +728,14 @@
     let timerInterval = null;
     let checkTimer = null;
     let solveTimer = null;
+    let winReturnTimer = null;
     let checking = false;
     let solvePending = false;
     let gameOver = false;
     let gameWon = false;
     let lastWinEarnedHint = false;
     let currentBadCells = new Set();
+    let violationUndoAvailable = false;
     let audioContext = null;
 
     function loadProgress() {
@@ -667,25 +798,59 @@
       return [...set];
     }
 
+    function gameSnapshot() {
+      return {
+        solution,
+        puzzle,
+        board,
+        fixed,
+        connectors,
+        history,
+        clueCells: serializeSet(clueCells),
+        currentDifficulty,
+        currentMode,
+        currentSeed,
+        moves,
+        lives,
+        currentBadCells: serializeSet(currentBadCells),
+        elapsedSeconds,
+        gameWon,
+        gameOver,
+        lastWinEarnedHint
+      };
+    }
+
+    function getDailyGames() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(DAILY_GAMES_KEY) || "{}");
+        return saved && typeof saved === "object" ? saved : {};
+      } catch {
+        return {};
+      }
+    }
+
+    function getDailyGame(seed) {
+      const saved = getDailyGames()[seed];
+      if (!saved || !Array.isArray(saved.board) || !Array.isArray(saved.solution)) return null;
+      return saved;
+    }
+
+    function saveDailyGame() {
+      if (currentMode !== "daily" || !currentSeed || !solution.length) return;
+      try {
+        const dailyGames = getDailyGames();
+        dailyGames[currentSeed] = gameSnapshot();
+        localStorage.setItem(DAILY_GAMES_KEY, JSON.stringify(dailyGames));
+      } catch {
+        // Daily history is optional; the current game can still continue.
+      }
+    }
+
     function saveActiveGame() {
+      if (currentMode === "daily") saveDailyGame();
       if (!solution.length || gameWon || gameOver) return clearActiveGame();
       try {
-        localStorage.setItem(GAME_KEY, JSON.stringify({
-          solution,
-          puzzle,
-          board,
-          fixed,
-          connectors,
-          history,
-          clueCells: serializeSet(clueCells),
-          currentDifficulty,
-          currentMode,
-          currentSeed,
-          moves,
-          lives,
-          currentBadCells: serializeSet(currentBadCells),
-          elapsedSeconds
-        }));
+        localStorage.setItem(GAME_KEY, JSON.stringify(gameSnapshot()));
       } catch {
         // Resume is optional; active play should continue even if storage is unavailable.
       }
@@ -834,8 +999,12 @@
       return shuffle(slots, rng).slice(0, 2).map(slot => {
         const a = fullBoard[slot.r][slot.c];
         const b = slot.dir === "h" ? fullBoard[slot.r][slot.c + 1] : fullBoard[slot.r + 1][slot.c];
-        return { ...slot, type: a === b ? "=" : "//" };
+        return { ...slot, type: a === b ? "=" : DIFFERENT_CONNECTOR };
       });
+    }
+
+    function normalizeConnectorType(type) {
+      return type === "*" || type === "//" ? DIFFERENT_CONNECTOR : type;
     }
 
     function cellKey(r, c) {
@@ -1046,6 +1215,23 @@
       gameOverModalEl.classList.remove("away-top", "away-bottom");
     }
 
+    function showHelpModal() {
+      helpModalEl.classList.remove("hidden");
+    }
+
+    function hideHelpModal() {
+      helpModalEl.classList.add("hidden");
+    }
+
+    function showResetModal() {
+      if (gameOver || gameWon) return;
+      resetModalEl.classList.remove("hidden");
+    }
+
+    function hideResetModal() {
+      resetModalEl.classList.add("hidden");
+    }
+
     function showGameOverModal() {
       const badCells = [...rowOrColumnErrors()].map(key => key.split(",").map(Number));
       gameOverModalEl.classList.remove("away-top", "away-bottom");
@@ -1054,8 +1240,8 @@
         gameOverModalEl.classList.add(averageRow < (SIZE - 1) / 2 ? "away-bottom" : "away-top");
       }
       gameOverTextEl.textContent = "That move broke a rule.";
-      gameOverRetryBtn.textContent = currentMode === "daily" ? "Try Again" : "New Puzzle";
-      gameOverRetryBtn.disabled = false;
+      gameOverRetryBtn.textContent = currentMode === "daily" ? "Daily Used" : "New Puzzle";
+      gameOverRetryBtn.disabled = currentMode === "daily";
       gameOverModalEl.classList.remove("hidden");
     }
 
@@ -1067,8 +1253,28 @@
       updateDailyButton();
     }
 
+    function clearWinReturnTimer() {
+      clearTimeout(winReturnTimer);
+      winReturnTimer = null;
+    }
+
+    function hideViolationUndo() {
+      violationUndoAvailable = false;
+      violationUndoEl.classList.add("hidden");
+    }
+
+    function showViolationUndo() {
+      violationUndoAvailable = history.length > 0 && !gameOver;
+      violationUndoEl.classList.toggle("hidden", !violationUndoAvailable);
+      violationUndoButton.disabled = !violationUndoAvailable;
+    }
+
     function showMenu() {
       hideGameOverModal();
+      hideHelpModal();
+      hideResetModal();
+      clearWinReturnTimer();
+      hideViolationUndo();
       if (!gameWon && !gameOver && solution.length) {
         updateTimer();
         saveActiveGame();
@@ -1088,12 +1294,66 @@
       updateDailyButton();
     }
 
+    function openSavedGame(saved, note = "") {
+      hideGameOverModal();
+      hideResetModal();
+      clearWinReturnTimer();
+      hideViolationUndo();
+      solution = saved.solution;
+      puzzle = saved.puzzle;
+      board = saved.board;
+      fixed = saved.fixed;
+      connectors = saved.connectors.map(conn => ({ ...conn, type: normalizeConnectorType(conn.type) }));
+      history = Array.isArray(saved.history) ? saved.history : [];
+      clueCells = new Set(saved.clueCells || []);
+      currentDifficulty = saved.currentDifficulty || "easy";
+      currentMode = saved.currentMode || "random";
+      currentSeed = saved.currentSeed || "";
+      moves = Number.isInteger(saved.moves) ? saved.moves : 0;
+      lives = Number.isInteger(saved.lives) ? saved.lives : 3;
+      currentBadCells = new Set(saved.currentBadCells || []);
+      elapsedSeconds = Number.isInteger(saved.elapsedSeconds) ? saved.elapsedSeconds : 0;
+      gameOver = Boolean(saved.gameOver);
+      gameWon = Boolean(saved.gameWon);
+      lastWinEarnedHint = Boolean(saved.lastWinEarnedHint);
+      clearTimeout(checkTimer);
+      clearTimeout(solveTimer);
+      checkTimer = null;
+      solveTimer = null;
+      checking = false;
+      solvePending = false;
+      newGameBtn.textContent = gameWon ? "Next Puzzle" : "New Puzzle";
+      modeLabelEl.textContent = `${DIFFICULTIES[currentDifficulty].label} ${currentMode === "daily" ? "Daily" : "Random"}`;
+      startScreenEl.classList.add("hidden");
+      gameScreenEl.classList.remove("hidden");
+      if (gameWon || gameOver) {
+        stopTimer();
+        timeCountEl.textContent = formatTime(elapsedSeconds);
+      } else {
+        startTimer(elapsedSeconds);
+      }
+      render();
+      playBluup();
+      updateStatus(note);
+      if (gameOver) showGameOverModal();
+    }
+
     function newPuzzle(mode = currentMode, difficulty = currentDifficulty) {
       hideGameOverModal();
+      hideResetModal();
+      clearWinReturnTimer();
+      hideViolationUndo();
       clearActiveGame();
       currentMode = mode;
       currentDifficulty = difficulty;
       currentSeed = mode === "daily" ? dailySeed(difficulty) : `random-${Date.now()}-${Math.random()}`;
+      if (mode === "daily") {
+        const savedDaily = getDailyGame(currentSeed);
+        if (savedDaily) {
+          openSavedGame(savedDaily, savedDaily.gameWon ? "Daily puzzle complete." : "Daily puzzle resumed.");
+          return;
+        }
+      }
       const rng = mode === "daily" ? seededRandom(currentSeed) : Math.random;
       solution = makeSolution(rng);
       puzzle = makePuzzle(solution, difficulty, rng);
@@ -1122,49 +1382,21 @@
       startTimer();
       render();
       updateStatus();
+      playBluup();
       saveActiveGame();
     }
 
     function resumeSavedGame() {
       const saved = getSavedGame();
       if (!saved) return;
-      hideGameOverModal();
-      solution = saved.solution;
-      puzzle = saved.puzzle;
-      board = saved.board;
-      fixed = saved.fixed;
-      connectors = saved.connectors.map(conn => ({ ...conn, type: conn.type === "*" ? "//" : conn.type }));
-      history = Array.isArray(saved.history) ? saved.history : [];
-      clueCells = new Set(saved.clueCells || []);
-      currentDifficulty = saved.currentDifficulty || "easy";
-      currentMode = saved.currentMode || "random";
-      currentSeed = saved.currentSeed || "";
-      moves = Number.isInteger(saved.moves) ? saved.moves : 0;
-      lives = Number.isInteger(saved.lives) ? saved.lives : 3;
-      currentBadCells = new Set(saved.currentBadCells || []);
-      elapsedSeconds = Number.isInteger(saved.elapsedSeconds) ? saved.elapsedSeconds : 0;
-      clearTimeout(checkTimer);
-      clearTimeout(solveTimer);
-      checkTimer = null;
-      solveTimer = null;
-      checking = false;
-      solvePending = false;
-      gameOver = false;
-      gameWon = false;
-      lastWinEarnedHint = false;
-      newGameBtn.textContent = "New Puzzle";
-      modeLabelEl.textContent = `${DIFFICULTIES[currentDifficulty].label} ${currentMode === "daily" ? "Daily" : "Random"}`;
-      startScreenEl.classList.add("hidden");
-      gameScreenEl.classList.remove("hidden");
-      startTimer(elapsedSeconds);
-      render();
-      updateStatus("Resumed game.");
+      openSavedGame(saved, "Resumed game.");
     }
 
     function cycleCell(r, c) {
       if (fixed[r][c] || gameOver || solvePending || gameWon) return;
       history.push(board.map(row => [...row]));
       currentBadCells = new Set();
+      hideViolationUndo();
       if (board[r][c] === "") board[r][c] = "X";
       else if (board[r][c] === "X") board[r][c] = "O";
       else board[r][c] = "";
@@ -1190,6 +1422,7 @@
       hints--;
       saveProgress();
       currentBadCells = new Set();
+      hideViolationUndo();
       board[r][c] = solution[r][c];
       fixed[r][c] = true;
       clueCells.add(cellKey(r, c));
@@ -1206,9 +1439,58 @@
       if (!previous) return;
       board = previous;
       currentBadCells = new Set();
+      hideViolationUndo();
       scheduleCheck();
       render();
       updateStatus();
+      saveActiveGame();
+    }
+
+    function continueAfterViolation() {
+      if (!violationUndoAvailable || gameOver || gameWon) return;
+      clearTimeout(checkTimer);
+      clearTimeout(solveTimer);
+      checkTimer = null;
+      solveTimer = null;
+      checking = false;
+      solvePending = false;
+      const previous = history.pop();
+      if (!previous) {
+        hideViolationUndo();
+        return;
+      }
+      board = previous;
+      moves = Math.max(0, moves - 1);
+      currentBadCells = new Set();
+      hideViolationUndo();
+      render();
+      updateStatus("Continued from the last move.");
+      saveActiveGame();
+    }
+
+    function resetLevel() {
+      if (gameOver || gameWon) return;
+      hideResetModal();
+      clearTimeout(checkTimer);
+      clearTimeout(solveTimer);
+      checkTimer = null;
+      solveTimer = null;
+      checking = false;
+      solvePending = false;
+      board = puzzle.map(row => [...row]);
+      fixed = puzzle.map(row => row.map(Boolean));
+      clueCells = new Set([...clueCells].filter(key => {
+        const [r, c] = key.split(",").map(Number);
+        return Boolean(puzzle[r]?.[c]);
+      }));
+      history = [];
+      moves = 0;
+      lives = 3;
+      currentBadCells = new Set();
+      hideViolationUndo();
+      startTimer();
+      render();
+      updateStatus("Level reset.");
       saveActiveGame();
     }
 
@@ -1227,18 +1509,23 @@
           lives = Math.max(0, lives - 1);
           playSadSound();
           if (lives === 0) {
+            hideViolationUndo();
             gameOver = true;
             stopTimer();
+            saveDailyGame();
             clearActiveGame();
             showGameOverModal();
           } else {
+            showViolationUndo();
             saveActiveGame();
           }
         } else if (isCompleteAndValid()) {
           currentBadCells = new Set();
+          hideViolationUndo();
           awardWin();
         } else {
           currentBadCells = new Set();
+          hideViolationUndo();
           saveActiveGame();
         }
         render();
@@ -1370,9 +1657,10 @@
             const slot = document.createElement("div");
             if (conn) {
               const state = currentBadCells.size ? connectorState(conn) : "";
-              slot.className = `connector ${conn.type === "//" ? "different" : ""} ${state}`;
-              slot.textContent = conn.type;
-              slot.setAttribute("aria-label", conn.type === "=" ? "same connector" : "different connector");
+              const type = normalizeConnectorType(conn.type);
+              slot.className = `connector ${type === "=" ? "same" : "different"} ${state}`;
+              slot.textContent = type;
+              slot.setAttribute("aria-label", type === "=" ? "same connector" : "different connector");
             } else {
               slot.className = "empty-slot";
             }
@@ -1382,6 +1670,7 @@
       }
       hintBtn.disabled = gameOver || solvePending || gameWon || hints <= 0 || !board.flat().some(value => !value);
       undoBtn.disabled = gameOver || solvePending || gameWon || history.length === 0;
+      resetLevelBtn.disabled = gameOver || gameWon;
     }
 
     function scheduleSolveIfNeeded() {
@@ -1417,9 +1706,12 @@
       }
       saveProgress();
       recordScore();
+      saveDailyGame();
       clearActiveGame();
       newGameBtn.textContent = "Next Puzzle";
       playFanfare();
+      clearWinReturnTimer();
+      winReturnTimer = setTimeout(showMenu, 3000);
       return true;
     }
 
@@ -1429,7 +1721,7 @@
       const os = flat.filter(v => v === "O").length;
       const open = flat.filter(v => !v).length;
       scheduleSolveIfNeeded();
-      pieceCountEl.textContent = `${xs} X / ${os} O`;
+      pieceCountEl.innerHTML = `<span>X: ${xs}</span><span>O: ${os}</span>`;
       openCountEl.textContent = `${open} ${open === 1 ? "square" : "squares"}`;
       timeCountEl.textContent = formatTime(elapsedSeconds);
       moveCountEl.textContent = String(moves);
@@ -1437,6 +1729,8 @@
       hintCountEl.textContent = String(hints);
       bestCountEl.textContent = describeBest();
       hintBtn.disabled = gameOver || solvePending || gameWon || hints <= 0 || open === 0;
+      resetLevelBtn.disabled = gameOver || gameWon;
+      violationUndoButton.disabled = !violationUndoAvailable || gameOver || solvePending || gameWon || history.length === 0;
       messageEl.classList.toggle("win", gameWon);
 
       if (gameOver) {
@@ -1472,10 +1766,23 @@
       playBluup();
     });
     menuButton.addEventListener("click", showMenu);
+    menuHelpButton.addEventListener("click", showHelpModal);
+    helpButton.addEventListener("click", showHelpModal);
+    helpCloseBtn.addEventListener("click", hideHelpModal);
+    helpModalEl.addEventListener("click", event => {
+      if (event.target === helpModalEl) hideHelpModal();
+    });
+    resetLevelBtn.addEventListener("click", showResetModal);
+    resetCancelBtn.addEventListener("click", hideResetModal);
+    resetConfirmBtn.addEventListener("click", resetLevel);
+    resetModalEl.addEventListener("click", event => {
+      if (event.target === resetModalEl) hideResetModal();
+    });
     gameOverMenuBtn.addEventListener("click", showMenu);
     gameOverRetryBtn.addEventListener("click", () => newPuzzle(currentMode, currentDifficulty));
     hintBtn.addEventListener("click", useHint);
     undoBtn.addEventListener("click", undo);
+    violationUndoButton.addEventListener("click", continueAfterViolation);
     newGameBtn.addEventListener("click", () => {
       const nextMode = gameWon ? "random" : currentMode;
       newPuzzle(nextMode, currentDifficulty);
